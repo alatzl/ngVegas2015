@@ -54,29 +54,70 @@
 
 				<section>
 					<h2>The Problem</h2>
-					<h3>You're picking up a project another developer has started, using AngularJS. Or so you thought.</h3>
+					<h3>You're using Angular for the first time, to build a large web application. You and you're team haven't used AngularJS before, so you end up neglecting a lot of what Angular has to offer.</h3>
+
+					<aside class="notes">
+						You end up wrapping relevant code in controllers and creating routes...but that's about it. You continue to write most of your code the way you normally would, without AngularJS.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Common Pitfalls</h2>
+
 					<ul>
-						<li class="fragment">There are global objects to handle data fetching, rather than services.</li>
-						<li class="fragment">Ajax calls are used instead of $http</li>
+						<li class="fragment">Using Ajax calls rather than Angular's built-in $http service</li>
+
 						<li class="fragment">
-							Scopes have been placed on a global object in order to communicate across controllers.
+							Using global objects to communicate between scopes/controllers
 						</li>
+
 						<li class="fragment">
-							Code is repeated in separate controllers that do almost the exact same thing.
+							Failing to modularize and/or componentize your code.
 						</li>
+
 						<li class="fragment">
-							Global variables instead of proper dependency injection create fragile organization.
+							Relying on the presence of global variables, rather than handling dependencies using Dependency Injection
 						</li>
-						<li class="fragment">Business logic is in controllers, when it should be abstracted out into services.</li>
+
+						<li class="fragment">Putting business logic in controllers, when it should be abstracted into a service.</li>
 					</ul>
 
 					<aside class="notes">Here are some notes that shouldn't show on the page.</aside>
 				</section>
 
 				<section>
-					<h2>The right tool for the job?</h2>
+					<h2>Take Advantage of Everything Available</h2>
 					<p>If you're given an entire toolbox with which to build a bookshelf, why would you insist on doing everything using only the hammer?</p>
 				</section>
+
+				<section>
+					<h2>So where do we start?</h2>
+				</section>
+
+				<section>
+					<section>
+						<h2>Break up files.</h2>
+						<h4>Every component should have its own folder, and every controller/service/directive should have its own Javascript file.</h4>
+					</section>
+
+					<section>
+						code sample here? structure tree of some kind?
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Create Services</h2>
+						<h4>Eliminate global variables. Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them. </h4>
+					</section>
+
+					<section>
+						code sample here
+					</section>
+				</section>
+
+
+
 
 				<!-- Example of nested vertical slides -->
 				<section>
