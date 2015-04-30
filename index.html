@@ -54,7 +54,7 @@
 
 				<section>
 					<h2>The Problem</h2>
-					<h3>You're using Angular for the first time, to build a large web application. You and you're team haven't used AngularJS before, so you end up neglecting a lot of what Angular has to offer.</h3>
+					<h3>You're using Angular for the first time, to build a large web application. Or maybe you're rewriting an existing application in Angular. You and you're team haven't used AngularJS before, so you end up neglecting a lot of what Angular has to offer.</h3>
 
 					<aside class="notes">
 						You end up wrapping relevant code in controllers and creating routes...but that's about it. You continue to write most of your code the way you normally would, without AngularJS.
@@ -65,7 +65,11 @@
 					<h2>Common Pitfalls</h2>
 
 					<ul>
-						<li class="fragment">Using Ajax calls rather than Angular's built-in $http service</li>
+						<li class="fragment">
+							Relying on the presence of global variables, rather than handling dependencies using Dependency Injection
+						</li>
+
+						<li class="fragment">Failing to take advantage of Angular's built-in services.</li>
 
 						<li class="fragment">
 							Using global objects to communicate between scopes/controllers
@@ -73,10 +77,6 @@
 
 						<li class="fragment">
 							Failing to modularize and/or componentize your code.
-						</li>
-
-						<li class="fragment">
-							Relying on the presence of global variables, rather than handling dependencies using Dependency Injection
 						</li>
 
 						<li class="fragment">Putting business logic in controllers, when it should be abstracted into a service.</li>
@@ -100,22 +100,120 @@
 						<h4>Every component should have its own folder, and every controller/service/directive should have its own Javascript file.</h4>
 					</section>
 
-					<section>
-						code sample here? structure tree of some kind?
-					</section>
+					<aside class="notes">
+						The extra time taken to split up files will be worth it when you're able to easily pinpoint what file to open to make a future change, rather than searching through your entire codebase to find where that one directive was declared. 
+					</aside>
 				</section>
 
 				<section>
 					<section>
 						<h2>Create Services</h2>
-						<h4>Eliminate global variables. Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them. </h4>
+						<h4>Eliminate global variables by wrapping them in services.</h4>
+						
+						<aside class="notes">
+							Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them. 
+						</aside>
 					</section>
 
 					<section>
-						code sample here
+						<h3>Example: Global Object</h3>
+						<pre>
+							<code class="javascript">
+	var globalAddressBook = {
+		data: null,
+		getAddresses: function() {
+			// get addresses here and set this.data
+		}
+	}
+
+	angular.module('app')
+		.controller('MyCtrl', function($scope) {
+			// hope that globalAddressBook exists somewhere
+			$scope.myAddresses = globalAddressBook.getAddresses();
+		});
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Example: Wrapped in a Service</h3>
+						<pre>
+							<code data-trim class="javascript">
+	angular.module('app')
+		.service('addressBookService', function(){
+			return {
+				data: null,
+				getAddresses: function() {
+					// get addresses here and set this.data
+				}
+			};
+		})
+		.controller('MyCtrl', function($scope, addressBookService) {
+			// now we can leverage dependency injection; our code is more
+			// modular and testable
+			$scope.myAddresses = addressBookService.getAddresses();
+		});
+							</code>
+						</pre>
 					</section>
 				</section>
 
+				<section>
+				
+					<section>
+						<h3>Example: Grabbing data from a server</h3>
+						<pre>
+							<code data-trim>
+	angular.module('app')
+		.service('addressBookService', function(){
+			return {
+				data: null,
+				getAddresses: function() {
+					$.ajax({
+						url: '/path/to/data',
+						dataType: 'json',
+						success: function(data) {
+							// handle success here
+						},
+						error: function(error) {
+							// handle error here
+						}
+					});
+				}
+			};
+		});
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h2>Example: Using Angular's $http service</h2>
+						<pre>
+							<code data-trim>
+	angular.module('app')
+		.service('addressBookService', function($q){
+			var deferred = $q.defer();
+
+			return {
+				data: null,
+				getAddresses: function() {
+					$http({
+						method: 'GET',
+						url: '/path/to/data'
+					}).then(function(response) {
+						deferred.resolve(response);
+					}, function(error) {
+						deferred.reject(error);
+					});
+
+					return deferred.promise;
+				}
+			};
+		})								
+							</code>
+						</pre>
+					</section>
+				</section>
 
 
 
