@@ -41,7 +41,7 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Stop Hitting Yourself</h1>
+					<h1>Don't Hurt Yourself</h1>
 					<h3>Adopting AngularJS in Existing Applications</h3>
 				</section>
 
@@ -54,7 +54,7 @@
 
 				<section>
 					<h2>The Problem</h2>
-					<h3>You're using Angular for the first time, to build a large web application. Or maybe you're rewriting an existing application in Angular. You and you're team haven't used AngularJS before, so you end up neglecting a lot of what Angular has to offer.</h3>
+					<h3>You're using Angular for the first time, to build a large web application. Or maybe you're rewriting an existing application in Angular. You and your team haven't used AngularJS before, so you end up neglecting a lot of what Angular has to offer.</h3>
 
 					<aside class="notes">
 						You end up wrapping relevant code in controllers and creating routes...but that's about it. You continue to write most of your code the way you normally would, without AngularJS.
@@ -100,11 +100,21 @@
 					</section>
 
 					<aside class="notes">
-						The extra time taken to split up files will be worth it when you're able to easily pinpoint what file to open to make a future change, rather than searching through your entire codebase to find where that one directive was declared. 
+						<ul>
+							<li>extra time taken is worth it in the long run</li>
+							<li>can more easily find the file you need, etc.</li>
+						</ul>
 					</aside>
 				</section>
 
 				<section>
+					<aside class="notes">
+						<ul>
+							<li>service is a singleton, so we know we're only ever dealing with that one instance</li>
+							<li>Angular will tell us if another servie of the same name is created, so there's no chance we'll inadvertently overwrite the object or its properties</li>
+						</ul>
+					</aside>
+
 					<section>
 						<h2>Create Services</h2>
 						<h4>Eliminate global variables by wrapping them in services.</h4>
@@ -116,20 +126,67 @@
 
 					<section>
 						<h3>Example: Global Object</h3>
+						<pre><code data-trim>
+angular.module('app')
+	.controller('MyCtrl', function($scope) {
+		// What is moment? Where is it defined? What if it's missing?
+		$scope.startTime = moment();
+		$scope.endTime = moment().add(1, 'h');
+
+		// What about d3? How do I know this exists and is the object I want?
+		$scope.chart = d3.select('div').append('svg')
+			.attr('width', 600)
+			.attr('height', 300)
+			.append('g');
+	});
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Example: Wrapped in a Service</h3>
+						<pre><code data-trim>
+angular.module('app')
+	.service('moment', function($window) {
+		var myMoment = $window.moment;
+
+		return {
+			getMoment: function() {
+				return $window.moment;
+			}
+		};
+	})
+	.service('d3Service', function($window) {
+		var myD3 = $window.d3;
+
+		return {
+			getD3: function() {
+				return myD3;
+			}
+		};
+	});
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>It works for custom objects, too!</h2>
+						<h4>Use this  method for any custom global objects you've created as well.</h4>
+
+					<section>
+						<h3>Example: Global Object</h3>
 						<pre>
 							<code class="javascript">
-	var globalAddressBook = {
-		data: null,
-		getAddresses: function() {
-			// get addresses here and set this.data
-		}
+var zoo = {
+	animals: null,
+	getAnimals: function() {
+		// get animals here and set this.animals
 	}
+}
 
-	angular.module('app')
-		.controller('MyCtrl', function($scope) {
-			// hope that globalAddressBook exists somewhere
-			$scope.myAddresses = globalAddressBook.getAddresses();
-		});
+angular.module('app')
+	.controller('ZooCtrl', function($scope) {
+		// hope that zoo exists somewhere
+		$scope.myAnimals = zoo.getAnimals();
+	});
 							</code>
 						</pre>
 					</section>
@@ -139,18 +196,18 @@
 						<pre>
 							<code data-trim>
 	angular.module('app')
-		.service('addressBookService', function(){
+		.service('zooService', function(){
 			return {
-				data: null,
-				getAddresses: function() {
-					// get addresses here and set this.data
+				animals: null,
+				getAnimals: function() {
+					// get animals here and set this.animals
 				}
 			};
 		})
-		.controller('MyCtrl', function($scope, addressBookService) {
+		.controller('ZooCtrl', function($scope, zooService) {
 			// now we can leverage dependency injection; our code is more
 			// modular and testable
-			$scope.myAddresses = addressBookService.getAddresses();
+			$scope.myAnimals = zooService.getAnimals();
 		});
 							</code>
 						</pre>
@@ -158,6 +215,10 @@
 				</section>
 
 				<section>
+					<ul>
+						<li>using $http lets you use $httpInterceptors, whereas jQuery's $.ajax() will not</li>
+					</ul>
+
 					<section>
 						<h2>Use all the tools available to you</h2>
 						<h4>Angular's built-in services make life easier. Use them!</h4>
@@ -216,6 +277,22 @@
 							</code>
 						</pre>
 					</section>
+
+					<section>
+						<h2>most commonly needed built-in services</h2>
+						<h4>
+							<ul>
+								<li>$http</li>
+								<li>$window</li>
+								<li>$document</li>
+								<li>$location</li>
+								<li>$animate</li>
+								<li>$filter</li>
+								<li>$q</li>
+								<li>$timeout</li>
+							</ul>
+						</h4>
+					</section>
 				</section>
 
 				<section>
@@ -228,7 +305,7 @@
 						</aside>
 					</section>
 
-					<section>
+				<!-- 	<section>
 						<h3>Example: Controller riddled with excess logic</h3>
 						<pre>
 							<code data-trim>
@@ -244,7 +321,7 @@
 							// bar
 							</code>
 						</pre>
-					</section>
+					</section> -->
 				</section>
 
 				<section>
@@ -265,7 +342,7 @@
 				isCompleted: false
 			};
 
-			$scope.baseWorkTodo = angular.extend({}, BASE_TODO);
+			$scope.baseWorkTodo = angular.copy(BASE_TODO);
 			$scope.baseWorkTodo.project = {
 				id: 1,
 				text: 'ngVegas talk'
@@ -279,7 +356,7 @@
 				isCompleted: false
 			};
 
-			$scope.basePersonalTodo = angular.extend({}, BASE_TODO);
+			$scope.basePersonalTodo = angular.copy(BASE_TODO);
 			$scope.basePersonalTodo.location = 'Las Vegas, NV';
 		});
 						</code></pre>
@@ -297,14 +374,14 @@ angular.module('todoListApp')
 		isCompleted: false
 	})
 	.controller('workToDos', function($scope, baseTodoObject) {
-		$scope.baseWorkTodo = angular.extend({}, baseTodoObject);
+		$scope.baseWorkTodo = angular.copy(baseTodoObject);
 		$scope.baseWorkTodo.project = {
 			id: 1,
 			text: 'ngVegas talk'
 		};
 	})
 	.controller('personalToDos', function($scope, baseTodoObject) {
-		$scope.basePersonalTodo = angular.extend({}, baseTodoObject);
+		$scope.basePersonalTodo = angular.copy(baseTodoObject);
 		$scope.basePersonalTodo.location = 'Las Vegas, NV';
 	});
 							</code>
@@ -312,7 +389,7 @@ angular.module('todoListApp')
 					</section>
 				</section>
 
-				<section>
+				<!-- <section>
 					<section>
 						<h2>Modularize your code</h2>
 						<h4>If you're doing the same thing in multiple places, pull that logic out into a directive and reuse it that way.</h4>
@@ -335,17 +412,67 @@ angular.module('todoListApp')
 							</code>
 						</pre>
 					</section>
-				</section>
+				</section> -->
 
 				<section>
 					<section>
 						<h2>Take things a step further</h2>
-						<h4>Do you have multiple controllers that do <em>almost</em>the same thing? Try creating a base controller and extending it for each other use case.</h4>
+						<h4>Do you have multiple controllers that do <em>almost</em> the same thing? Try creating a base controller and extending it for each use case.</h4>
+
+						<aside class="notes">
+						More testable! Cleaner! 
+						</aside>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
+						<pre><code data-trim>
+	angular.module('app')
+		.controller('baseCtrl', function($scope) {
+			$scope.recordType = '';
+			$scope.recordService = null;
+
+			$scope.getRecords = function() {
+				$scope.recordService.getRecords().then(function(response) {
+					// handle response
+				});
+			};
+
+			$scope.addRecord = function() {
+				$scope.recordService.addRecord(record).then(function(response) {
+					// handle response
+				});
+			};
+
+			$scope.deleteRecord = function() {
+				$scope.recordService.deleteRecord(record).then(function(response) {
+					// handle response
+				})
+			};
+		});
+						</code></pre>
+
 					</section>
+
+					<section>
+						<h3>Example:</h3>
+						<pre><code data-trim>
+	app.controller('userRecordCtrl', function($scope, $controller, userService) {
+		// inherit $scope of baseCtrl
+		$controller('baseCtrl', {
+			$scope: $scope
+		});
+
+	  // now override $scope properties as necessary;
+		$scope.recordType = 'User';
+		$scope.recordService = userService;
+	});
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>Major Takeaways</h3>
 				</section>
 			</div>
 
