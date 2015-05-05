@@ -52,7 +52,8 @@
 				<section>
 					<h2>Disclaimer</h2>
 					<aside class="notes">
-					A lot of this talk may seem obvious to a lot of you. You might think, duh, this is fairly common knowledge. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.
+					1. A lot of this talk may seem obvious to a lot of you. You might think, duh, this is fairly common knowledge. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.
+					2. Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.
 					</aside>
 				</section>
 
@@ -195,7 +196,7 @@ angular.module('app')
 						<aside class="notes">
 							<ul>
 								<li>now we can leverage dependency injection</li>
-								<li>our code is more modular and testable</li>
+								<li>our code is more modular and more testable</li>
 							</ul>
 						</aside>
 					</section>
@@ -223,9 +224,7 @@ angular.module('app')
 						success: function(result) {
 							data = result;
 						},
-						error: function(error) {
-
-						}
+						error: function(error) {}
 					});
 				}
 			};
@@ -236,7 +235,7 @@ angular.module('app')
 
 					<section>
 					<aside class="notes">
-					why return the promise itself?? explain.
+						why return the promise itself?? explain.
 					</aside>
 						<h3>Example: Using Angular's $http service</h3>
 						<pre>
@@ -256,8 +255,9 @@ angular.module('app')
 						</pre>
 						<aside class="notes">
 							<ul>
-						<li>using $http lets you use $httpInterceptors, whereas jQuery's $.ajax() will not</li>
-					</ul>
+								<li>using $http lets you use $httpInterceptors, whereas jQuery's $.ajax() will not</li>
+								<li>Now you can mock out $http in tests</li>
+							</ul>
 						</aside>
 					</section>
 
@@ -265,7 +265,7 @@ angular.module('app')
 					<aside class="notes">
 
 					</aside>
-						<h2>commonly used built-in services</h2>
+						<h2>frequently forgotten built-in services</h2>
 						<h4>
 							<ul>
 								<li>$http</li>
@@ -329,31 +329,26 @@ angular.module('app')
 					<section>
 						<h3>Example: Repeated Code</h3>
 						<pre><code data-trim>
-	angular.module('todoListApp')
-		.controller('workToDos', function($scope) {
-			var BASE_TODO = {
-				dueDate: null,
-				text: '',
-				id: 0,
-				isCompleted: false
+	angular.module('petStoreApp')
+		.controller('petStoreOneCtrl', function($scope) {
+			$scope.myCat = {
+				name: 'Grumpy',
+				type: 'cat'
+				age: 2
 			};
 
-			$scope.baseWorkTodo = angular.copy(BASE_TODO);
-			$scope.baseWorkTodo.project = {
-				id: 1,
-				text: 'ngVegas talk'
+			$scope.myDog = {
+				name: 'Lassie',
+				type: 'dog',
+				age: 4
 			};
 		})
-		.controller('personalToDos', function($scope) {
-			var BASE_TODO = {
-				dueDate: '2015-05-08',
-				text: 'Respond to emails.',
-				id: 0,
-				isCompleted: false
+		.controller('petStoreTwoCtrl', function($scope) {
+			$scope.myOtherCat = {
+				name: 'Fluffy',
+				type: 'cat',
+				age: 3
 			};
-
-			$scope.basePersonalTodo = angular.copy(BASE_TODO);
-			$scope.basePersonalTodo.location = 'Las Vegas, NV';
 		});
 						</code></pre>
 					</section>
@@ -362,117 +357,175 @@ angular.module('app')
 						<h3>Example: Using Angular values</h3>
 						<pre>
 							<code data-trim>
-angular.module('todoListApp')
-	.value('baseTodoObject', {
-		dueDate: null,
-		text: '',
-		id: 0,
-		isCompleted: false
+angular.module('petStoreApp')
+	.value('petTypes', {
+		CAT: 'cat',
+		DOG: 'dog',
+		FISH: 'fish'
 	})
-	.controller('workToDos', function($scope, baseTodoObject) {
-		$scope.baseWorkTodo = angular.copy(baseTodoObject);
-		$scope.baseWorkTodo.project = {
-			id: 1,
-			text: 'ngVegas talk'
+	.controller('petStoreOneCtrl', function($scope, petTypes) {
+		$scope.myCat = {
+			name: 'Grumpy',
+			type: petTypes.CAT,
+			age: 2
+		};
+
+		$scope.myDog = {
+			name: 'Lassie',
+			type: petTypes.DOG,
+			age: 4
 		};
 	})
-	.controller('personalToDos', function($scope, baseTodoObject) {
-		$scope.basePersonalTodo = angular.copy(baseTodoObject);
-		$scope.basePersonalTodo.location = 'Las Vegas, NV';
+	.controller('petStoreTwoCtrl', function($scope, petTypes) {
+		$scope.myOtherCat = {
+			name: 'Fluffy',
+			type: petTypes.CAT,
+			age: 3
+		};
 	});
 							</code>
 						</pre>
 					</section>
 				</section>
 
-				<!-- <section>
+				<section>
 					<section>
-						<h2>Modularize your code</h2>
-						<h4>If you're doing the same thing in multiple places, pull that logic out into a directive and reuse it that way.</h4>
+						<h2>Take things a step further</h2>
+						<h4>Do you have multiple services that do <em>almost</em> the same thing? Try creating a base service and extending it for each use case.</h4>
+
+						<aside class="notes">
+							More testable! Cleaner!
+						</aside>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
-						<pre>
-							<code data-trim>
-								// code goes here
-							</code>
-						</pre>
+						<pre><code data-trim>
+	angular.module('zooApp')
+		.service('monkeyService', function($http) {
+			var svc = {
+				getInfo: function(monkeyId) {
+					$http({ method: 'GET', url: 'monkey/' + monkeyId }).then(function(response) {
+						return response;
+					});
+				}
+				feed: function(monkeyId, food) {
+					$http({
+						method: 'PUT',
+						url: 'monkey/dinnerTime/' + monkeyId,
+						data: food
+					}).then(function(response) {
+						return response;
+					});
+				}
+			};
+
+			return svc;
+		})
+		.service('lionService', function($http) {
+			var svc = {
+				getInfo: function(lionId) {
+					$http({ method: 'GET', url: 'lion/' + lionId }).then(function(response) {
+						return response;
+					});
+				},
+				feed: function(lionId, food) {
+					$http({
+						method: 'PUT',
+						url: 'lion/dinnerTime/' + lionId,
+						data: food
+					}).then(function(response) {
+						return response;
+					});
+				}
+			};
+
+			return svc;
+		});
+						</code></pre>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
-						<pre>
-							<code data-trim>
-								// code goes here
-							</code>
-						</pre>
+						<pre><code data-trim>
+	angular.module('zooApp')
+		.service('animalService', function($http) {
+			var animalSvc = function(_endpoint_) {
+				var endpoint = _endpoint_ + '/';
+
+				return {
+					getInfo: getInfo,
+					feed: feed
+				};
+
+				function getInfo(animalId) {
+					$http({ method: 'GET', url: endpoint + animalId }).then(function(response) {
+						return response;
+					});
+				};
+
+				function feed(animalId, food) {
+					feed: function(animalId, food) {
+						$http({
+							method: 'PUT',
+							url: endpoint + '/dinnerTime/' + animalId,
+							data: food
+						}).then(function(response) {
+							return response;
+						});
+					}
+				}
+			};
+						</code></pre>
 					</section>
-				</section> -->
+
+					<section>
+						<h3>Example: </h3>
+						<pre><code data-trim>
+angular.module('zooApp')
+	.service('monkeyService', function(animalService) {
+		var monkeySvc = animalService('monkey');
+
+		return monkeySvc;
+	})
+	.service('lionService', function(animalService) {
+		var lionSvc = animalService('lion');
+
+		return lionSvc;
+	});
+						</code></pre>
+					</section>
+				</section>
 
 				<section>
 					<section>
 						<h2>Take things a step further</h2>
-						<h4>Do you have multiple controllers that do <em>almost</em> the same thing? Try creating a base controller and extending it for each use case.</h4>
+						<h4>What about controllers?</h4>
 
 						<aside class="notes">
-						More testable! Cleaner!
+							More testable! Cleaner!
 						</aside>
 					</section>
 
 					<section>
 						<h3>Example:</h3>
 						<pre><code data-trim>
-	angular.module('app')
-		.controller('catCtrl', function($scope) {
-			$scope.name = 'Grumpy';
-			$scope.prey = [ 'mouse', 'mouse' ];
-			$scope.eat = function () {
-				$scope.prey.pop();
-			};
-			$scope.numLegs = 4;
+	angular.module('petStoreApp')
+		.controller('grumpiestCatCtrl', function($scope, catService) {
+			$scope.cat = catService.getCurrentCat();
 
-			$scope.move = function() {};
 
-			$scope.breathe = function() {
-				// something here
-			};
+
 		})
-		.controller('fishCtrl', function($scope) {
-			$scope.name = 'Nemo';
-			$scope.prey = [ 'algae' ];
-			$scope.eat = function() {
-				$scope.prey.pop();
-			};
-			$scope.numLegs = 0;
 
-			$scope.move = function() {};
-
-			$scope.breathe = function() {
-				// something here
-			};
-		});
 						</code></pre>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
 						<pre><code data-trim>
-	angular.module('app')
-		.controller('animalCtrl', function($scope) {
-			$scope.name = '';
-			$scope.prey = [];
-			$scope.numLegs = null;
-			$scope.move = null;
+	angular.module('app')...
 
-			$scope.eat = function() {
-				$scope.prey.pop();
-			};
-
-			$scope.breathe = function() {
-				// something here
-			};
-		});
 						</code></pre>
 
 					</section>
@@ -480,32 +533,7 @@ angular.module('todoListApp')
 					<section>
 						<h3>Example:</h3>
 						<pre><code data-trim>
-	app.controller('catCtrl', function($scope, $controller) {
-		// inherit $scope of baseCtrl
-		$controller('animalCtrl', {
-			$scope: $scope
-		});
-
-	  // now override $scope properties as necessary;
-		$scope.name = 'Grumpy';
-		$scope.numLegs = 4;
-		$scope.prey = [ 'mouse', 'mouse', 'mouse' ];
-
-		var move = angular.noop;
-		$scope.move = pounce;
-	})
-	.controller('fishControl', function($scope, $controller) {
-		$controller('animalCtrl', {
-			$scope: $scope
-		});
-
-		$scope.name = 'Nemo';
-		$scope.numLegs = 0;
-		$scope.prey = [ 'algae' ];
-
-		var swim = angular.noop;
-		$scope.move = swim;
-	});
+	more here...
 						</code></pre>
 					</section>
 				</section>
@@ -513,6 +541,9 @@ angular.module('todoListApp')
 				<section>
 					<h2>Takeaways</h2>
 
+					<aside class="notes">
+					We can take steps to incrementally update our code, piece by piece, while still following Angular best practices. and
+					</aside>
 				</section>
 			</div>
 
