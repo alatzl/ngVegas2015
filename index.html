@@ -41,8 +41,8 @@
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Don't Hurt Yourself</h1>
-					<h3>Adopting AngularJS in Existing Applications</h3>
+					<h2>Adopting AngularJS in Existing Applications</h2>
+					<br/>
 					<h4>
 						<a href="http://www.alexandraatzl.com">Alexandra Atzl</a> | <a href="http://twitter.com/alexandraatzl">@alexandraatzl</a>
 					</h4>
@@ -52,7 +52,7 @@
 				<section>
 					<h2>Disclaimer</h2>
 					<aside class="notes">
-					1. A lot of this talk may seem obvious to a lot of you. You might think, duh, this is fairly common knowledge. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.
+					1. A lot of this talk may seem obvious to a lot of you. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.
 					2. Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.
 					</aside>
 				</section>
@@ -65,7 +65,7 @@
 				</section>
 
 				<section>
-					<h2>Common Pitfalls</h2>
+					<h2>Common Issues</h2>
 
 					<ul>
 						<li class="fragment">Placing multiple objects in a single file.</li>
@@ -73,6 +73,7 @@
 						<li class="fragment">Not using Angular's built-in services.</li>
 						<li class="fragment">Putting business logic in controllers</li>
 						<li class="fragment">Repeating base objects, constant values, etc.</li>
+						<li class="fragment">Repeating nearly-identical functionality across services or controllers.</li>
 					</ul>
 
 					<aside class="notes">
@@ -93,27 +94,24 @@
 					<section>
 						<h2>Break up files.</h2>
 						<h4>Every component should have its own folder, and every controller/service/directive should have its own Javascript file.</h4>
-					</section>
 
-					<aside class="notes">
-						The extra time taken is worth it in the long run. This way, you can more easily find specific files you may need, etc.
-					</aside>
+						<aside class="notes">
+							The extra time taken is worth it in the long run. This way, you can more easily find specific files you may need, etc.
+						</aside>
+					</section>
 				</section>
 
 				<section>
-					<aside class="notes">
-						<ul>
-							<li>service is a singleton, so we know we're only ever dealing with that one instance</li>
-							<li>Angular will tell us if another servie of the same name is created, so there's no chance we'll inadvertently overwrite the object or its properties</li>
-						</ul>
-					</aside>
-
 					<section>
 						<h2>Create Services</h2>
 						<h4>Eliminate global variables by wrapping them in services.</h4>
 
 						<aside class="notes">
-							Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them.
+							<ul>
+								<li>Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them.</li>
+
+								<li>Benefits: service is a singleton, so we know we're only ever dealing with that one instance; angular will tell us if another service of the same name is created, so there's no chance we'll inadvertently overwrite the object or its properties</li>
+							</ul>
 						</aside>
 					</section>
 
@@ -131,9 +129,10 @@ angular.module('app')
 
 					<section>
 						<aside class="notes">
-						Advantage: guaranteeing you have it on controller level; also, can set jshint to not allow access to global variables unless you explicitly allow it.
-						Plus! Then, you can mock it out when testing.
+							Advantage: guaranteeing you have it on controller level; also, can set jshint to not allow access to global variables unless you explicitly allow it.
+							Plus! Then, you can mock it out when testing.
 						</aside>
+
 						<h3>Example: Wrapped in a Service</h3>
 						<pre><code data-trim>
 angular.module('app')
@@ -173,9 +172,6 @@ angular.module('app')
 					</section>
 
 					<section>
-					<aside class="notes">
-					you don't have to changemuch, just add a dependency, and set up the globals in a smarter way.
-					</aside>
 						<h3>Example: Wrapped in a Service</h3>
 						<pre>
 							<code data-trim>
@@ -234,9 +230,6 @@ angular.module('app')
 					</section>
 
 					<section>
-					<aside class="notes">
-						why return the promise itself?? explain.
-					</aside>
 						<h3>Example: Using Angular's $http service</h3>
 						<pre>
 							<code data-trim>
@@ -257,6 +250,7 @@ angular.module('app')
 							<ul>
 								<li>using $http lets you use $httpInterceptors, whereas jQuery's $.ajax() will not</li>
 								<li>Now you can mock out $http in tests</li>
+								<li>why return the promise itself?? explain...</li>
 							</ul>
 						</aside>
 					</section>
@@ -281,7 +275,7 @@ angular.module('app')
 					</section>
 				</section>
 
-				<section>
+			<!-- 	<section>
 					<section>
 						<aside class="notes">
 							a lot of times, people learn controllers first, so they put everything in there when they shouldn't.
@@ -294,7 +288,7 @@ angular.module('app')
 						</aside>
 					</section>
 
-				<!-- 	<section>
+					<section>
 						<h3>Example: Controller riddled with excess logic</h3>
 						<pre>
 							<code data-trim>
@@ -310,20 +304,21 @@ angular.module('app')
 							// bar
 							</code>
 						</pre>
-					</section> -->
-				</section>
+					</section>
+				</section> -->
 
 				<section>
-					<aside class="notes">
-						<ul>
-							<li>sometimes you use globals for constants, configuration objects, etc.</li>
-							<li>using Angular.value or angular.constant provides a better way to do that</li>
-							<li>then you can use dependency injection</li>
-						</ul>
-					</aside>
 					<section>
 						<h2>Utilize Angular Values &amp; Constants</h2>
 						<h4>If you commonly need to use the same values, don't add them to every controller individually!</h4>
+
+						<aside class="notes">
+							<ul>
+								<li>sometimes you use globals for constants, configuration objects, etc.</li>
+								<li>using angular.value or angular.constant provides a better way to do that</li>
+								<li>then you can use dependency injection</li>
+							</ul>
+						</aside>
 					</section>
 
 					<section>
@@ -334,20 +329,17 @@ angular.module('app')
 			$scope.myCat = {
 				name: 'Grumpy',
 				type: 'cat'
-				age: 2
 			};
 
 			$scope.myDog = {
 				name: 'Lassie',
-				type: 'dog',
-				age: 4
+				type: 'dog'
 			};
 		})
 		.controller('petStoreTwoCtrl', function($scope) {
 			$scope.myOtherCat = {
 				name: 'Fluffy',
-				type: 'cat',
-				age: 3
+				type: 'cat'
 			};
 		});
 						</code></pre>
@@ -360,27 +352,23 @@ angular.module('app')
 angular.module('petStoreApp')
 	.value('petTypes', {
 		CAT: 'cat',
-		DOG: 'dog',
-		FISH: 'fish'
+		DOG: 'dog'
 	})
 	.controller('petStoreOneCtrl', function($scope, petTypes) {
 		$scope.myCat = {
 			name: 'Grumpy',
-			type: petTypes.CAT,
-			age: 2
+			type: petTypes.CAT
 		};
 
 		$scope.myDog = {
 			name: 'Lassie',
-			type: petTypes.DOG,
-			age: 4
+			type: petTypes.DOG
 		};
 	})
 	.controller('petStoreTwoCtrl', function($scope, petTypes) {
 		$scope.myOtherCat = {
 			name: 'Fluffy',
-			type: petTypes.CAT,
-			age: 3
+			type: petTypes.CAT
 		};
 	});
 							</code>
@@ -392,28 +380,23 @@ angular.module('petStoreApp')
 					<section>
 						<h2>Take things a step further</h2>
 						<h4>Do you have multiple services that do <em>almost</em> the same thing? Try creating a base service and extending it for each use case.</h4>
-
-						<aside class="notes">
-							More testable! Cleaner!
-						</aside>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
 						<pre><code data-trim>
-	angular.module('zooApp')
-		.service('monkeyService', function($http) {
+	angular.module('petStoreApp')
+		.service('catService', function($http) {
 			var svc = {
-				getInfo: function(monkeyId) {
-					$http({ method: 'GET', url: 'monkey/' + monkeyId }).then(function(response) {
+				getList: function() { // return all cats at the store
+					$http({ method: 'GET', url: 'cats/all' }).then(function(response) {
 						return response;
 					});
 				}
-				feed: function(monkeyId, food) {
+				getInfo: function(catId) { // get info for a specific cat
 					$http({
-						method: 'PUT',
-						url: 'monkey/dinnerTime/' + monkeyId,
-						data: food
+						method: 'GET',
+						url: 'cats/' + catId
 					}).then(function(response) {
 						return response;
 					});
@@ -422,18 +405,17 @@ angular.module('petStoreApp')
 
 			return svc;
 		})
-		.service('lionService', function($http) {
+		.service('dogService', function($http) {
 			var svc = {
-				getInfo: function(lionId) {
-					$http({ method: 'GET', url: 'lion/' + lionId }).then(function(response) {
+				getList: function() {
+					$http({ method: 'GET', url: 'dogs/all' }).then(function(response) {
 						return response;
 					});
 				},
-				feed: function(lionId, food) {
+				getInfo: function(dogId) {
 					$http({
-						method: 'PUT',
-						url: 'lion/dinnerTime/' + lionId,
-						data: food
+						method: 'GET',
+						url: 'dogs/' + dogId
 					}).then(function(response) {
 						return response;
 					});
@@ -448,50 +430,55 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Example: </h3>
 						<pre><code data-trim>
-	angular.module('zooApp')
-		.service('animalService', function($http) {
-			var animalSvc = function(_endpoint_) {
+	angular.module('petStoreApp')
+		.service('petService', function($http) {
+			var petSvc = function(_endpoint_) {
 				var endpoint = _endpoint_ + '/';
 
 				return {
-					getInfo: getInfo,
-					feed: feed
+					getList: getList,
+					getInfo: getInfo
 				};
 
-				function getInfo(animalId) {
-					$http({ method: 'GET', url: endpoint + animalId }).then(function(response) {
+				function getList() {
+					$http({ method: 'GET', url: endpoint + 'all' }).then(function(response) {
 						return response;
 					});
-				};
-
-				function feed(animalId, food) {
-					feed: function(animalId, food) {
+				}
+				
+				function getInfo(petId) {
 						$http({
-							method: 'PUT',
-							url: endpoint + '/dinnerTime/' + animalId,
-							data: food
+							method: 'GET',
+							url: endpoint + petId
 						}).then(function(response) {
 							return response;
 						});
 					}
 				}
 			};
+
+			return petSvc;
+		});
 						</code></pre>
+
+						<aside class="notes">
+							More testable! Cleaner!
+						</aside>
 					</section>
 
 					<section>
 						<h3>Example: </h3>
 						<pre><code data-trim>
-angular.module('zooApp')
-	.service('monkeyService', function(animalService) {
-		var monkeySvc = animalService('monkey');
+angular.module('petStoreApp')
+	.service('catService', function(petService) {
+		var catSvc = petService('/cats');
 
-		return monkeySvc;
+		return catSvc;
 	})
-	.service('lionService', function(animalService) {
-		var lionSvc = animalService('lion');
+	.service('lionService', function(petService) {
+		var dogSvc = petService('/dogs');
 
-		return lionSvc;
+		return dogSvc;
 	});
 						</code></pre>
 					</section>
@@ -510,40 +497,61 @@ angular.module('zooApp')
 					<section>
 						<h3>Example:</h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
-		.controller('grumpiestCatCtrl', function($scope, catService) {
-			$scope.cat = catService.getCurrentCat();
+angular.module('petStoreApp')
+	.controller('catCtrl', function($scope, catService) {
+		$scope.getData = function(catId) {
+			catService.getInfo(catId).then(function(response) {
+				// handle response
+			});
+		});
 
+		$scope.addCat = function(newCat) {
+			catService.addCat(newCat).then(function(response) {
+				// handle response
+			});
+		});
+	})
+	.controller('dogCtrl', function($scope, dogService) {
+		$scope.getData = function(dogId) {
+			dogService.getInfo(dogId).then(function(response) {
+				// handle response
+			});
+		});
 
-
-		})
-
-						</code></pre>
-					</section>
-
-					<section>
-						<h3>Example: </h3>
-						<pre><code data-trim>
-	angular.module('app')...
-
-						</code></pre>
-
-					</section>
-
-					<section>
-						<h3>Example:</h3>
-						<pre><code data-trim>
-	more here...
+		$scope.addDog = function(newDog) {
+			dogService.addDog(newDog).then(function(response) {
+				// handle response
+			});
+		});
+	});
 						</code></pre>
 					</section>
 				</section>
 
 				<section>
 					<h2>Takeaways</h2>
+					<h4>
+						<ul>
+							<li class="fragment">Stop using global objects.</li>
+							<li class="fragment">Use the tools Angular provides you.</li>
+							<li class="fragment">Keep business logic out of controllers.</li>
+							<li class="fragment">Extend base services & controllers to minimize code duplication</li>
+							<li class="fragment">
+								<span>DON'T.</span>
+								<span class="fragment">REPEAT.</span>
+								<span class="fragment">YOURSELF.</span>
+							</li>
+						</ul>
+					</h4>
 
 					<aside class="notes">
-					We can take steps to incrementally update our code, piece by piece, while still following Angular best practices. and
+						We can take steps to incrementally update our code, piece by piece, while still following Angular best practices.
 					</aside>
+				</section>
+
+				<section>
+					<h2>Thanks!</h2>
+					<!-- link to slides? further info? -->
 				</section>
 			</div>
 
