@@ -35,9 +35,7 @@
 	</head>
 
 	<body>
-
 		<div class="reveal">
-
 			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
@@ -47,23 +45,46 @@
 						<a href="http://www.alexandraatzl.com">Alexandra Atzl</a> | <a href="http://twitter.com/alexandraatzl">@alexandraatzl</a>
 					</h4>
 					<h4>UI Developer at <a href="http://www.effectiveui.com">EffectiveUI</a> | Rochester, NY</h4>
+					<aside class="notes">
+						<ul>
+							<li>Adapting Technolog to Humans, not the other way around</li>
+							<li>digital agency specializing in the design and creation of complex web and mobile applications</li>
+							<li>As a UI Developer, most of my work for EUI is for clients.</li>
+						</ul>
+					</aside>
 				</section>
 
 				<section>
 					<h2>Disclaimer</h2>
 					<aside class="notes">
-					1. A lot of this talk may seem obvious to a lot of you. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.
-					2. Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.
+						<ul>
+							<li>A lot of this talk may seem obvious to a lot of you. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.</li>
+							<li>Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.</li>
+						</ul>
 					</aside>
 				</section>
 
 				<section>
 					<h2>The Problem</h2>
 					<aside class="notes">
-						You're working for a client, and you're given Angular code that really only uses controllers. You have limited time, budget, and resources, but you need to make this code align more with Angular concepts, and you need it to be more modular, testable, and scalable.
+						<ul>
+							<li>Let's say you are going to be working on an app for a client, based on their code.</li>
+							<li>They built a prototype quickly (and messy) with limited time/resources/budget</li>
+							<li>When learning a new framework, it's tempting to fall back to your old way of doing something. You end up with a mix that is disorganized and fragile.</li>
+							<li>Your time/budget/resources are finite, but you need to refactor everything because right now, it's barely using Angular at all.</li>
+							<li>Want an app that's more modular, scalable, and testable.</li>
+						</ul>
 					</aside>
 				</section>
 
+				<!-- <section>
+					<h3>
+						<q>
+						&ldquo;Developers are lazy, and the only thing constant in development is change.&rdquo;</q>
+					</h3>
+					<p>- Dave Barnum</p>
+				</section>
+ -->
 				<section>
 					<h2>Common Issues</h2>
 
@@ -96,7 +117,10 @@
 						<h4>Every component should have its own folder, and every controller/service/directive should have its own Javascript file.</h4>
 
 						<aside class="notes">
-							The extra time taken is worth it in the long run. This way, you can more easily find specific files you may need, etc.
+							<ul>
+								<li>extra time is worth it in the long run.</li>
+								<li>you can more easily find specific files you may need, etc.</li>
+							</ul>
 						</aside>
 					</section>
 				</section>
@@ -108,9 +132,9 @@
 
 						<aside class="notes">
 							<ul>
-								<li>Most of these can be wrapped in an Angular service, and you can use dependency injection to make them available in the controllers where you need them.</li>
-
-								<li>Benefits: service is a singleton, so we know we're only ever dealing with that one instance; angular will tell us if another service of the same name is created, so there's no chance we'll inadvertently overwrite the object or its properties</li>
+								<li>service is a singleton, so we know we're only ever dealing with that one instance</li>
+								<li>angular will throw errors if we are missing the service, or have multiple by the same name</li>
+								<li>no chance we'll overwrite it without knowing</li>
 							</ul>
 						</aside>
 					</section>
@@ -129,8 +153,11 @@ angular.module('app')
 
 					<section>
 						<aside class="notes">
-							Advantage: guaranteeing you have it on controller level; also, can set jshint to not allow access to global variables unless you explicitly allow it.
-							Plus! Then, you can mock it out when testing.
+							<ul>
+								<li>Advantage: guaranteeing you have it on controller level</li>
+								<li>Now you can mock it out in your unit tests</li>
+								<li>also, can set jshint to not allow access to global variables unless you explicitly allow it.</li>
+							</ul>
 						</aside>
 
 						<h3>Example: Wrapped in a Service</h3>
@@ -445,7 +472,7 @@ angular.module('petStoreApp')
 						return response;
 					});
 				}
-				
+
 				function getInfo(petId) {
 						$http({
 							method: 'GET',
@@ -488,10 +515,6 @@ angular.module('petStoreApp')
 					<section>
 						<h2>Take things a step further</h2>
 						<h4>What about controllers?</h4>
-
-						<aside class="notes">
-							More testable! Cleaner!
-						</aside>
 					</section>
 
 					<section>
@@ -503,26 +526,63 @@ angular.module('petStoreApp')
 			catService.getInfo(catId).then(function(response) {
 				// handle response
 			});
-		});
+		};
 
 		$scope.addCat = function(newCat) {
-			catService.addCat(newCat).then(function(response) {
+			catService.add(newCat).then(function(response) {
 				// handle response
 			});
-		});
+		};
 	})
 	.controller('dogCtrl', function($scope, dogService) {
 		$scope.getData = function(dogId) {
 			dogService.getInfo(dogId).then(function(response) {
 				// handle response
 			});
-		});
+		};
 
 		$scope.addDog = function(newDog) {
-			dogService.addDog(newDog).then(function(response) {
+			dogService.add(newDog).then(function(response) {
 				// handle response
 			});
+		};
+	});
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Example:</h3>
+						<pre><code data-trim>
+angular.module('petStoreApp')
+	.controller('petCtrl', function($scope, petService) {
+		$scope.getData = function(petId) {
+			petService.getInfo(petId).then(function(response) {
+				// handle response
+			});
+		};
+
+		$scope.addPet = function(newPet) {
+			petService.add(newPet).then(function(response) {
+				// handle response
+			});
+		};
+	})
+	.controller('catCtrl', function($scope, $controller, catService) {
+		$controller('petCtrl', {
+			$scope: $scope,
+			petService: catService
 		});
+
+		// now, extend.
+		$scope.addCat = $scope.addPet;
+	})
+	.controller('dogCtrl', function($scope, $controller, dogService) {
+		$controller('petCtrl', {
+			$scope: $scope,
+			petService: dogService
+		});
+
+		$scope.addDog = $scope.addPet;
 	});
 						</code></pre>
 					</section>
@@ -535,7 +595,7 @@ angular.module('petStoreApp')
 							<li class="fragment">Stop using global objects.</li>
 							<li class="fragment">Use the tools Angular provides you.</li>
 							<li class="fragment">Keep business logic out of controllers.</li>
-							<li class="fragment">Extend base services & controllers to minimize code duplication</li>
+							<li class="fragment">Extend base services &amp; controllers to minimize code duplication</li>
 							<li class="fragment">
 								<span>DON'T.</span>
 								<span class="fragment">REPEAT.</span>
@@ -550,7 +610,7 @@ angular.module('petStoreApp')
 				</section>
 
 				<section>
-					<h2>Thanks!</h2>
+					<h2>Thank You</h2>
 					<!-- link to slides? further info? -->
 				</section>
 			</div>
