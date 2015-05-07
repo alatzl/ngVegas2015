@@ -264,4 +264,6 @@ body {
   color: #e7ad52; }
 
 .reveal pre code {
+  font-size: 20px;
+  line-height: 1.2;
   max-height: 500px; }

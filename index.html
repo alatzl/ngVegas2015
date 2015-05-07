@@ -59,6 +59,7 @@
 					<aside class="notes">
 						<ul>
 							<li>A lot of this talk may seem obvious to a lot of you. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.</li>
+							<li>These examples all come from real code written by developers I have worked with.</li>
 							<li>Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.</li>
 						</ul>
 					</aside>
@@ -87,15 +88,16 @@
  -->
 				<section>
 					<h2>Common Issues</h2>
-
-					<ul>
-						<li class="fragment">Placing multiple objects in a single file.</li>
-						<li class="fragment">Using global variables</li>
-						<li class="fragment">Not using Angular's built-in services.</li>
-						<li class="fragment">Putting business logic in controllers</li>
-						<li class="fragment">Repeating base objects, constant values, etc.</li>
-						<li class="fragment">Repeating nearly-identical functionality across services or controllers.</li>
-					</ul>
+					<h4>
+						<ul>
+							<li class="fragment">Placing multiple objects in a single file.</li>
+							<li class="fragment">Using global variables</li>
+							<li class="fragment">Not using Angular's built-in services.</li>
+							<li class="fragment">Putting business logic in controllers</li>
+							<li class="fragment">Repeating base objects, constant values, etc.</li>
+							<li class="fragment">Repeating nearly-identical functionality across services or controllers.</li>
+						</ul>
+					</h4>
 
 					<aside class="notes">
 					 ex. using setTimeout instead of $timeout, putting 5 controllers in a single file, etc.
@@ -254,7 +256,7 @@
 					<section>
 						<h3>Try this:</h3>
 						<pre>
-							<code data-trim>
+							<code class="javascript" data-trim>
 	angular.module('app')
 		.factory('zoo', function(){
 			var animals = null;
@@ -287,7 +289,7 @@
 					<section>
 						<h3>Instead of this:</h3>
 						<pre>
-							<code data-trim>
+							<code class="javascript" data-trim>
 	angular.module('app')
 		.factory('addressBookService', function(){
 			var data = null;
@@ -301,7 +303,7 @@
 							data = result;
 						},
 						error: function(error) {}
-					});
+					);
 				}
 			};
 		});
@@ -431,28 +433,27 @@
 						<h3>Try this:</h3>
 						<pre>
 							<code data-trim>
-angular.module('petStoreApp')
-	.value('petTypes', {
-		CAT: 'cat',
-		DOG: 'dog'
-	})
-	.controller('petStoreOneCtrl', function($scope, petTypes) {
-		$scope.myCat = {
-			name: 'Grumpy',
-			type: petTypes.CAT
-		};
+	petStoreApp.value('petTypes', {
+			CAT: 'cat',
+			DOG: 'dog'
+		})
+		.controller('petStoreOneCtrl', function($scope, petTypes) {
+			$scope.myCat = {
+				name: 'Grumpy',
+				type: petTypes.CAT
+			};
 
-		$scope.myDog = {
-			name: 'Lassie',
-			type: petTypes.DOG
-		};
-	})
-	.controller('petStoreTwoCtrl', function($scope, petTypes) {
-		$scope.myOtherCat = {
-			name: 'Fluffy',
-			type: petTypes.CAT
-		};
-	});
+			$scope.myDog = {
+				name: 'Lassie',
+				type: petTypes.DOG
+			};
+		})
+		.controller('petStoreTwoCtrl', function($scope, petTypes) {
+			$scope.myOtherCat = {
+				name: 'Fluffy',
+				type: petTypes.CAT
+			};
+		});
 							</code>
 						</pre>
 					</section>
@@ -467,8 +468,7 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Instead of this:</h3>
 						<pre><code class="javascript" data-trim>
-	angular.module('petStoreApp')
-		.service('catService', function($http) {
+	petStoreApp.service('catService', function($http) {
 			var svc = {
 				getList: function() { // return all cats at the store
 					$http({ method: 'GET', url: 'cats/all' })
@@ -502,8 +502,7 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Try this:</h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
-		.service('petService', function($http) {
+	petStoreApp.service('petService', function($http) {
 			var petSvc = function(_endpoint_) {
 				var endpoint = _endpoint_ + '/';
 
@@ -536,8 +535,7 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Now our services are DRY</h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
-		.service('catService', function(petService) {
+	petStoreApp.service('catService', function(petService) {
 			var catSvc = petService('/cats');
 
 			return catSvc;
@@ -566,8 +564,7 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Instead of this:</h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
-		.controller('catCtrl', function($scope, catService) {
+	petStoreApp.controller('catCtrl', function($scope, catService) {
 			$scope.getData = function(catId) {
 				catService.getInfo(catId)
 					.then(successFn, errorFn);
@@ -593,27 +590,26 @@ angular.module('petStoreApp')
 					<section>
 						<h3>Try this: </h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
-		.controller('petCtrl', function($scope, petService) {
+	petStoreApp.controller('petCtrl', function($scope, animalService) {
 			$scope.getData = function(petId) {
-				petService.getInfo(petId)
+				animalService.getInfo(petId)
 					.then(successFn, errorFn);
 			};
 
 			$scope.addPet = function(newPet) {
-				petService.add(newPet);
+				animalService.add(newPet);
 			};
 		});
 						</code></pre>
 						<aside class="notes">
-							"petService" refers to whatever service we send in when we instantiate the controller; it must be inherited by a child controller.
+							"animalService" refers to whatever service we send in when we instantiate the controller; it must be inherited by a child controller.
 						</aside>
 					</section>
 
 					<section>
-						<h3></h3>
+						<h3>Much better!</h3>
 						<pre><code data-trim>
-	angular.module('petStoreApp')
+	petStoreApp('petStoreApp')
 		.controller('catCtrl', function($scope, $controller, catService) {
 			$controller('petCtrl', {
 				$scope: $scope,
@@ -664,6 +660,11 @@ angular.module('petStoreApp')
 
 				<section>
 					<h2>Thank You!</h2>
+					<h4>
+						Alexandra Atzl<br/>
+						<a href="http://www.alexandraatzl.com">alexandraatzl.com</a><br/>
+						<a href="http://twitter.com/alexandraatzl">@alexandraatzl</a>
+					</h4>
 				</section>
 			</div>
 
