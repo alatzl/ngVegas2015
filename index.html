@@ -613,7 +613,7 @@
 		.controller('catCtrl', function($scope, $controller, catService) {
 			$controller('petCtrl', {
 				$scope: $scope,
-				petService: catService
+				animalService: catService
 			});
 
 			$scope.addCat = $scope.addPet;
@@ -621,7 +621,7 @@
 		.controller('dogCtrl', function($scope, $controller, dogService) {
 			$controller('petCtrl', {
 				$scope: $scope,
-				petService: dogService
+				animalService: dogService
 			});
 
 			$scope.addDog = $scope.addPet;
