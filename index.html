@@ -120,6 +120,59 @@
 							<ul>
 								<li>extra time is worth it in the long run.</li>
 								<li>you can more easily find specific files you may need, etc.</li>
+								<li>Files should be organized by feature rather than type</li>
+							</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h2>Group by feature, not type</h2>
+						<div class="half-slide fragment">
+							<h4>Instead of this:</h4>
+							<pre><code class="markdown">
+	app/
+		app.js
+		controllers/
+			login.ctrl.js
+			search.ctrl.js
+		services/
+			login.svc.js
+			search.svg.js
+		directives/
+			header.dir.js
+		views/
+			login.html
+			search.html
+			header.html
+
+							</code></pre>
+						</div>
+
+						<div class="half-slide fragment">
+							<h4>Try this:</h4>
+							<pre><code class="markdown">
+	app/
+		app.js
+		components/
+			login/
+				login.ctrl.js
+				login.svc.js
+				login.html
+			search/
+				search.ctrl.js
+				search.svc.js
+				search.html
+		common/
+			header/
+				header.dir.js
+				header.html
+							</code></pre>
+						</div>
+
+						<aside class="notes">
+							<ul>
+								<li>Some of this comes down t perosnal preference. I like the shorter abbreviation; some might prefer .controller.js, .directive.js, etc.</li>
+								<li>Whatever convention you choose, communicate it and stick with it throughout your entire codebase.</li>
 							</ul>
 						</aside>
 					</section>
@@ -140,14 +193,14 @@
 					</section>
 
 					<section>
-						<h3>Example: Global Object</h3>
+						<h3>Instead of this:</h3>
 						<pre><code data-trim>
-angular.module('app')
-	.controller('MyCtrl', function($scope) {
-		// What is moment? How do I know this exists and is the object I want?
-		$scope.startTime = moment();
-		$scope.endTime = moment().add(1, 'h');
-	});
+	angular.module('app')
+		.controller('MyCtrl', function($scope) {
+			// What is moment? How do I know this exists and is the object I want?
+			$scope.startTime = moment();
+			$scope.endTime = moment().add(1, 'h');
+		});
 						</code></pre>
 					</section>
 
@@ -160,16 +213,16 @@ angular.module('app')
 							</ul>
 						</aside>
 
-						<h3>Example: Wrapped in a Service</h3>
+						<h3>Try this:</h3>
 						<pre><code data-trim>
-angular.module('app')
-	.service('moment', function($window) {
-		return $window.moment;
-	})
-	.controller('MyCtrl', function($scope, moment) {
-		$scope.startTime = moment();
-		$scope.endTime = moment().add(1, 'h');
-	});
+	angular.module('app')
+		.service('moment', function($window) {
+			return $window.moment;
+		})
+		.controller('MyCtrl', function($scope, moment) {
+			$scope.startTime = moment();
+			$scope.endTime = moment().add(1, 'h');
+		});
 						</code></pre>
 					</section>
 
@@ -179,27 +232,27 @@ angular.module('app')
 					</section>
 
 					<section>
-						<h3>Example: Global Object</h3>
+						<h3>Instead of this:</h3>
 						<pre>
 							<code class="javascript">
-var zoo = {
-	animals: null,
-	getAnimals: function() {
-		return this.animals;
+	var zoo = {
+		animals: null,
+		getAnimals: function() {
+			return this.animals;
+		}
 	}
-}
 
-angular.module('app')
-	.controller('ZooCtrl', function($scope) {
-		// hope that zoo exists somewhere
-		$scope.myAnimals = zoo.getAnimals();
-	});
+	angular.module('app')
+		.controller('ZooCtrl', function($scope) {
+			// hope that zoo exists somewhere
+			$scope.myAnimals = zoo.getAnimals();
+		});
 							</code>
 						</pre>
 					</section>
 
 					<section>
-						<h3>Example: Wrapped in a Service</h3>
+						<h3>Try this:</h3>
 						<pre>
 							<code data-trim>
 	angular.module('app')
@@ -232,7 +285,7 @@ angular.module('app')
 					</section>
 
 					<section>
-						<h3>Example: Grabbing data from a server</h3>
+						<h3>Instead of this:</h3>
 						<pre>
 							<code data-trim>
 	angular.module('app')
@@ -254,10 +307,15 @@ angular.module('app')
 		});
 							</code>
 						</pre>
+						<aside class="notes">
+						<ul>
+							<li>devs fall back to what they already know, if the new framework is taking too long</li>
+						</ul>
+						</aside>
 					</section>
 
 					<section>
-						<h3>Example: Using Angular's $http service</h3>
+						<h3>Try this:</h3>
 						<pre>
 							<code data-trim>
 	angular.module('app')
@@ -283,9 +341,6 @@ angular.module('app')
 					</section>
 
 					<section>
-					<aside class="notes">
-
-					</aside>
 						<h2>frequently forgotten built-in services</h2>
 						<h4>
 							<ul>
@@ -349,7 +404,7 @@ angular.module('app')
 					</section>
 
 					<section>
-						<h3>Example: Repeated Code</h3>
+						<h3>Intead of this:</h3>
 						<pre><code data-trim>
 	angular.module('petStoreApp')
 		.controller('petStoreOneCtrl', function($scope) {
@@ -373,7 +428,7 @@ angular.module('app')
 					</section>
 
 					<section>
-						<h3>Example: Using Angular values</h3>
+						<h3>Try this:</h3>
 						<pre>
 							<code data-trim>
 angular.module('petStoreApp')
@@ -410,23 +465,18 @@ angular.module('petStoreApp')
 					</section>
 
 					<section>
-						<h3>Example: </h3>
-						<pre><code data-trim>
+						<h3>Instead of this:</h3>
+						<pre><code class="javascript" data-trim>
 	angular.module('petStoreApp')
 		.service('catService', function($http) {
 			var svc = {
 				getList: function() { // return all cats at the store
-					$http({ method: 'GET', url: 'cats/all' }).then(function(response) {
-						return response;
-					});
+					$http({ method: 'GET', url: 'cats/all' })
+						.then(successFn, errorFn);
 				}
 				getInfo: function(catId) { // get info for a specific cat
-					$http({
-						method: 'GET',
-						url: 'cats/' + catId
-					}).then(function(response) {
-						return response;
-					});
+					$http({ method: 'GET', url: 'cats/' + catId })
+						.then(successFn, errorFn);
 				}
 			};
 
@@ -435,17 +485,12 @@ angular.module('petStoreApp')
 		.service('dogService', function($http) {
 			var svc = {
 				getList: function() {
-					$http({ method: 'GET', url: 'dogs/all' }).then(function(response) {
-						return response;
-					});
+					$http({ method: 'GET', url: 'dogs/all' })
+						.then(successFn, errorFn);
 				},
 				getInfo: function(dogId) {
-					$http({
-						method: 'GET',
-						url: 'dogs/' + dogId
-					}).then(function(response) {
-						return response;
-					});
+					$http({ method: 'GET', url: 'dogs/' + dogId })
+						.then(successFn, errorFn);
 				}
 			};
 
@@ -455,7 +500,7 @@ angular.module('petStoreApp')
 					</section>
 
 					<section>
-						<h3>Example: </h3>
+						<h3>Try this:</h3>
 						<pre><code data-trim>
 	angular.module('petStoreApp')
 		.service('petService', function($http) {
@@ -468,18 +513,13 @@ angular.module('petStoreApp')
 				};
 
 				function getList() {
-					$http({ method: 'GET', url: endpoint + 'all' }).then(function(response) {
-						return response;
-					});
+					$http({ method: 'GET', url: endpoint + 'all' })
+						.then(successFn, errorFn);
 				}
 
 				function getInfo(petId) {
-						$http({
-							method: 'GET',
-							url: endpoint + petId
-						}).then(function(response) {
-							return response;
-						});
+					$http({ method: 'GET', url: endpoint + petId })
+						.then(successFn, errorFn);
 					}
 				}
 			};
@@ -494,97 +534,110 @@ angular.module('petStoreApp')
 					</section>
 
 					<section>
-						<h3>Example: </h3>
+						<h3>Now our services are DRY</h3>
 						<pre><code data-trim>
-angular.module('petStoreApp')
-	.service('catService', function(petService) {
-		var catSvc = petService('/cats');
+	angular.module('petStoreApp')
+		.service('catService', function(petService) {
+			var catSvc = petService('/cats');
 
-		return catSvc;
-	})
-	.service('lionService', function(petService) {
-		var dogSvc = petService('/dogs');
+			return catSvc;
+		})
+		.service('dogService', function(petService) {
+			var dogSvc = petService('/dogs');
 
-		return dogSvc;
-	});
+			return dogSvc;
+		});
 						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>Now we test this code in one place.</li>
+								<li>No more repetition</li>
+							</ul>
+						</aside>
 					</section>
 				</section>
 
 				<section>
 					<section>
-						<h2>Take things a step further</h2>
-						<h4>What about controllers?</h4>
+						<h2>What about controllers?</h2>
+						<h4>We can also create a base controller and extend it.</h4>
 					</section>
 
 					<section>
-						<h3>Example:</h3>
+						<h3>Instead of this:</h3>
 						<pre><code data-trim>
-angular.module('petStoreApp')
-	.controller('catCtrl', function($scope, catService) {
-		$scope.getData = function(catId) {
-			catService.getInfo(catId).then(function(response) {
-				// handle response
-			});
-		};
+	angular.module('petStoreApp')
+		.controller('catCtrl', function($scope, catService) {
+			$scope.getData = function(catId) {
+				catService.getInfo(catId)
+					.then(successFn, errorFn);
+			};
 
-		$scope.addCat = function(newCat) {
-			catService.add(newCat).then(function(response) {
-				// handle response
-			});
-		};
-	})
-	.controller('dogCtrl', function($scope, dogService) {
-		$scope.getData = function(dogId) {
-			dogService.getInfo(dogId).then(function(response) {
-				// handle response
-			});
-		};
+			$scope.addCat = function(newCat) {
+				catService.add(newCat);
+			};
+		})
+		.controller('dogCtrl', function($scope, dogService) {
+			$scope.getData = function(dogId) {
+				dogService.getInfo(dogId)
+					.then(successFn, errorFn);
+			};
 
-		$scope.addDog = function(newDog) {
-			dogService.add(newDog).then(function(response) {
-				// handle response
-			});
-		};
-	});
+			$scope.addDog = function(newDog) {
+				dogService.add(newDog);
+			};
+		});
 						</code></pre>
 					</section>
 
 					<section>
-						<h3>Example:</h3>
+						<h3>Try this: </h3>
 						<pre><code data-trim>
-angular.module('petStoreApp')
-	.controller('petCtrl', function($scope, petService) {
-		$scope.getData = function(petId) {
-			petService.getInfo(petId).then(function(response) {
-				// handle response
-			});
-		};
+	angular.module('petStoreApp')
+		.controller('petCtrl', function($scope, petService) {
+			$scope.getData = function(petId) {
+				petService.getInfo(petId)
+					.then(successFn, errorFn);
+			};
 
-		$scope.addPet = function(newPet) {
-			petService.add(newPet).then(function(response) {
-				// handle response
-			});
-		};
-	})
-	.controller('catCtrl', function($scope, $controller, catService) {
-		$controller('petCtrl', {
-			$scope: $scope,
-			petService: catService
+			$scope.addPet = function(newPet) {
+				petService.add(newPet);
+			};
 		});
-
-		// now, extend.
-		$scope.addCat = $scope.addPet;
-	})
-	.controller('dogCtrl', function($scope, $controller, dogService) {
-		$controller('petCtrl', {
-			$scope: $scope,
-			petService: dogService
-		});
-
-		$scope.addDog = $scope.addPet;
-	});
 						</code></pre>
+						<aside class="notes">
+							"petService" refers to whatever service we send in when we instantiate the controller; it must be inherited by a child controller.
+						</aside>
+					</section>
+
+					<section>
+						<h3></h3>
+						<pre><code data-trim>
+	angular.module('petStoreApp')
+		.controller('catCtrl', function($scope, $controller, catService) {
+			$controller('petCtrl', {
+				$scope: $scope,
+				petService: catService
+			});
+
+			$scope.addCat = $scope.addPet;
+		})
+		.controller('dogCtrl', function($scope, $controller, dogService) {
+			$controller('petCtrl', {
+				$scope: $scope,
+				petService: dogService
+			});
+
+			$scope.addDog = $scope.addPet;
+		});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>now when we call getInfo or addPet, it will know to use the service we injected and provided to the $controller function</li>
+								<li>in case our templates already expect 'addCat' and 'addDog', we can set them equal to the parent controller's 'addPet' if we want.
+								</li>
+							</ul>
+						</aside>
 					</section>
 				</section>
 
@@ -610,8 +663,7 @@ angular.module('petStoreApp')
 				</section>
 
 				<section>
-					<h2>Thank You</h2>
-					<!-- link to slides? further info? -->
+					<h2>Thank You!</h2>
 				</section>
 			</div>
 
@@ -628,18 +680,20 @@ angular.module('petStoreApp')
 				history: true,
 				center: true,
 
-				transition: 'slide', // none/fade/slide/convex/concave/zoom
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
 
 				// Optional reveal.js plugins
 				dependencies: [
 					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
 					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
-					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); hljs.configure({ tabReplace: '  ' }); } },
 					{ src: 'plugin/zoom-js/zoom.js', async: true },
 					{ src: 'plugin/notes/notes.js', async: true }
 				]
 			});
+
+
 
 		</script>
 

@@ -29,7 +29,19 @@ $headingTextTransform: none;
 $selectionBackgroundColor: #e7ad52;
 $mainFontSize: 30px;
 
+$headingMargin: 0 0 40px;
+
+.reveal .half-slide {
+  float: left;
+  width: 40%;
+  margin: 0 5%;
+}
 
 // Theme template ------------------------------
 @import "../template/theme";
 // ---------------------------------------------
+
+// AA Overrides for Presentation
+.reveal pre code {
+  max-height: 500px;
+}
