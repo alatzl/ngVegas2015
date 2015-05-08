@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>reveal.js - The HTML Presentation Framework</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="reveal">
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>Adopting AngularJS in Existing Applications</h2>
+					<br/>
+					<h4>
+						<a href="http://www.alexandraatzl.com">Alexandra Atzl</a> | <a href="http://twitter.com/alexandraatzl">@alexandraatzl</a>
+					</h4>
+					<h4>UI Developer at <a href="http://www.effectiveui.com">EffectiveUI</a> | Rochester, NY</h4>
+					<aside class="notes">
+						<ul>
+							<li>Adapting Technolog to Humans, not the other way around</li>
+							<li>digital agency specializing in the design and creation of complex web and mobile applications</li>
+							<li>As a UI Developer, most of my work for EUI is for clients.</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h2>Disclaimer</h2>
+					<aside class="notes">
+						<ul>
+							<li>A lot of this talk may seem obvious to a lot of you. But I've seen apps that don't follow my suggestions, so they're worth mentioning and calling out.</li>
+							<li>These examples all come from real code written by developers I have worked with.</li>
+							<li>Yes, I'm using $scope. Ideally, I would avoid $scope altogether and use this/controllerAs, but this is based on a real-life example, so I left that part out.</li>
+						</ul>
+					</aside>
+				</section>
+
+				<section>
+					<h2>The Problem</h2>
+					<aside class="notes">
+						<ul>
+							<li>Let's say you are going to be working on an app for a client, based on their code.</li>
+							<li>They built a prototype quickly (and messy) with limited time/resources/budget</li>
+							<li>When learning a new framework, it's tempting to fall back to your old way of doing something. You end up with a mix that is disorganized and fragile.</li>
+							<li>Your time/budget/resources are finite, but you need to refactor everything because right now, it's barely using Angular at all.</li>
+							<li>Want an app that's more modular, scalable, and testable.</li>
+						</ul>
+					</aside>
+				</section>
+
+				<!-- <section>
+					<h3>
+						<q>
+						&ldquo;Developers are lazy, and the only thing constant in development is change.&rdquo;</q>
+					</h3>
+					<p>- Dave Barnum</p>
+				</section>
+ -->
+				<section>
+					<h2>Common Issues</h2>
+					<h4>
+						<ul>
+							<li class="fragment">Placing multiple objects in a single file.</li>
+							<li class="fragment">Using global variables</li>
+							<li class="fragment">Not using Angular's built-in services.</li>
+							<li class="fragment">Putting business logic in controllers</li>
+							<li class="fragment">Repeating base objects, constant values, etc.</li>
+							<li class="fragment">Repeating nearly-identical functionality across services or controllers.</li>
+						</ul>
+					</h4>
+
+					<aside class="notes">
+					 ex. using setTimeout instead of $timeout, putting 5 controllers in a single file, etc.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Take Advantage of Everything Available</h2>
+					<p>If you're given an entire toolbox with which to build a bookshelf, why would you insist on doing everything using only the hammer?</p>
+				</section>
+
+				<section>
+					<h2>So where do we start?</h2>
+				</section>
+
+				<section>
+					<section>
+						<h2>Break up files.</h2>
+						<h4>Every component should have its own folder, and every controller/service/directive should have its own Javascript file.</h4>
+
+						<aside class="notes">
+							<ul>
+								<li>extra time is worth it in the long run.</li>
+								<li>you can more easily find specific files you may need, etc.</li>
+								<li>Files should be organized by feature rather than type</li>
+							</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h2>Group by feature, not type</h2>
+						<div class="half-slide fragment">
+							<h4>Instead of this:</h4>
+							<pre><code class="markdown">
+	app/
+		app.js
+		controllers/
+			login.ctrl.js
+			search.ctrl.js
+		services/
+			login.svc.js
+			search.svg.js
+		directives/
+			header.dir.js
+		views/
+			login.html
+			search.html
+			header.html
+
+							</code></pre>
+						</div>
+
+						<div class="half-slide fragment">
+							<h4>Try this:</h4>
+							<pre><code class="markdown">
+	app/
+		app.js
+		components/
+			login/
+				login.ctrl.js
+				login.svc.js
+				login.html
+			search/
+				search.ctrl.js
+				search.svc.js
+				search.html
+		common/
+			header/
+				header.dir.js
+				header.html
+							</code></pre>
+						</div>
+
+						<aside class="notes">
+							<ul>
+								<li>Some of this comes down t perosnal preference. I like the shorter abbreviation; some might prefer .controller.js, .directive.js, etc.</li>
+								<li>Whatever convention you choose, communicate it and stick with it throughout your entire codebase.</li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Create Services</h2>
+						<h4>Eliminate global variables by wrapping them in services.</h4>
+
+						<aside class="notes">
+							<ul>
+								<li>service is a singleton, so we know we're only ever dealing with that one instance</li>
+								<li>angular will throw errors if we are missing the service, or have multiple by the same name</li>
+								<li>no chance we'll overwrite it without knowing</li>
+							</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h3>Instead of this:</h3>
+						<pre><code data-trim>
+	angular.module('app')
+		.controller('MyCtrl', function($scope) {
+			// What is moment? How do I know this exists and is the object I want?
+			$scope.startTime = moment();
+			$scope.endTime = moment().add(1, 'h');
+		});
+						</code></pre>
+					</section>
+
+					<section>
+						<aside class="notes">
+							<ul>
+								<li>Advantage: guaranteeing you have it on controller level</li>
+								<li>Now you can mock it out in your unit tests</li>
+								<li>also, can set jshint to not allow access to global variables unless you explicitly allow it.</li>
+							</ul>
+						</aside>
+
+						<h3>Try this:</h3>
+						<pre><code data-trim>
+	angular.module('app')
+		.service('moment', function($window) {
+			return $window.moment;
+		})
+		.controller('MyCtrl', function($scope, moment) {
+			$scope.startTime = moment();
+			$scope.endTime = moment().add(1, 'h');
+		});
+						</code></pre>
+					</section>
+
+					<section>
+						<h2>It works for custom objects, too!</h2>
+						<h4>Use this  method for any custom global objects you've created as well.</h4>
+					</section>
+
+					<section>
+						<h3>Instead of this:</h3>
+						<pre>
+							<code class="javascript">
+	var zoo = {
+		animals: null,
+		getAnimals: function() {
+			return this.animals;
+		}
+	}
+
+	angular.module('app')
+		.controller('ZooCtrl', function($scope) {
+			// hope that zoo exists somewhere
+			$scope.myAnimals = zoo.getAnimals();
+		});
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Try this:</h3>
+						<pre>
+							<code class="javascript" data-trim>
+	angular.module('app')
+		.factory('zoo', function(){
+			var animals = null;
+			return {
+				getAnimals: function() {
+					return animals;
+				}
+			};
+		})
+		.controller('ZooCtrl', function($scope, zoo) {
+			$scope.myAnimals = zoo.getAnimals();
+		});
+							</code>
+						</pre>
+						<aside class="notes">
+							<ul>
+								<li>now we can leverage dependency injection</li>
+								<li>our code is more modular and more testable</li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Use all the tools available to you</h2>
+						<h4>Angular's built-in services make life easier. Use them!</h4>
+					</section>
+
+					<section>
+						<h3>Instead of this:</h3>
+						<pre>
+							<code class="javascript" data-trim>
+	angular.module('app')
+		.factory('addressBookService', function(){
+			var data = null;
+
+			return {
+				getAddresses: function() {
+					$.ajax({
+						url: '/path/to/data',
+						dataType: 'json',
+						success: function(result) {
+							data = result;
+						},
+						error: function(error) {}
+					);
+				}
+			};
+		});
+							</code>
+						</pre>
+						<aside class="notes">
+						<ul>
+							<li>devs fall back to what they already know, if the new framework is taking too long</li>
+						</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h3>Try this:</h3>
+						<pre>
+							<code data-trim>
+	angular.module('app')
+		.factory('addressBookService', function($http) {
+			return {
+				getAddresses: function() {
+					return $http({
+						method: 'GET',
+						url: '/path/to/data'
+					});
+				}
+			};
+		})
+							</code>
+						</pre>
+						<aside class="notes">
+							<ul>
+								<li>using $http lets you use $httpInterceptors, whereas jQuery's $.ajax() will not</li>
+								<li>Now you can mock out $http in tests</li>
+								<li>why return the promise itself?? explain...</li>
+							</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h2>frequently forgotten built-in services</h2>
+						<h4>
+							<ul>
+								<li>$http</li>
+								<li>$window</li>
+								<li>$document</li>
+								<li>$location</li>
+								<li>$animate</li>
+								<li>$filter</li>
+								<li>$q</li>
+								<li>$timeout</li>
+							</ul>
+						</h4>
+					</section>
+				</section>
+
+			<!-- 	<section>
+					<section>
+						<aside class="notes">
+							a lot of times, people learn controllers first, so they put everything in there when they shouldn't.
+						</aside>
+						<h2>Keep business logic out of controllers</h2>
+						<h4>Abstract this logic into services instead.</h4>
+
+						<aside class="notes">
+
+						</aside>
+					</section>
+
+					<section>
+						<h3>Example: Controller riddled with excess logic</h3>
+						<pre>
+							<code data-trim>
+							// foo
+							</code>
+						</pre>
+					</section>
+
+					<section>
+						<h3>Example: Abstracting logic out into a service</h3>
+						<pre>
+							<code data-trim>
+							// bar
+							</code>
+						</pre>
+					</section>
+				</section> -->
+
+				<section>
+					<section>
+						<h2>Utilize Angular Values &amp; Constants</h2>
+						<h4>If you commonly need to use the same values, don't add them to every controller individually!</h4>
+
+						<aside class="notes">
+							<ul>
+								<li>sometimes you use globals for constants, configuration objects, etc.</li>
+								<li>using angular.value or angular.constant provides a better way to do that</li>
+								<li>then you can use dependency injection</li>
+							</ul>
+						</aside>
+					</section>
+
+					<section>
+						<h3>Intead of this:</h3>
+						<pre><code data-trim>
+	angular.module('petStoreApp')
+		.controller('petStoreOneCtrl', function($scope) {
+			$scope.myCat = {
+				name: 'Grumpy',
+				type: 'cat'
+			};
+
+			$scope.myDog = {
+				name: 'Lassie',
+				type: 'dog'
+			};
+		})
+		.controller('petStoreTwoCtrl', function($scope) {
+			$scope.myOtherCat = {
+				name: 'Fluffy',
+				type: 'cat'
+			};
+		});
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Try this:</h3>
+						<pre>
+							<code data-trim>
+	petStoreApp.value('petTypes', {
+			CAT: 'cat',
+			DOG: 'dog'
+		})
+		.controller('petStoreOneCtrl', function($scope, petTypes) {
+			$scope.myCat = {
+				name: 'Grumpy',
+				type: petTypes.CAT
+			};
+
+			$scope.myDog = {
+				name: 'Lassie',
+				type: petTypes.DOG
+			};
+		})
+		.controller('petStoreTwoCtrl', function($scope, petTypes) {
+			$scope.myOtherCat = {
+				name: 'Fluffy',
+				type: petTypes.CAT
+			};
+		});
+							</code>
+						</pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Take things a step further</h2>
+						<h4>Do you have multiple services that do <em>almost</em> the same thing? Try creating a base service and extending it for each use case.</h4>
+					</section>
+
+					<section>
+						<h3>Instead of this:</h3>
+						<pre><code class="javascript" data-trim>
+	petStoreApp.service('catService', function($http) {
+			var svc = {
+				getList: function() { // return all cats at the store
+					$http({ method: 'GET', url: 'cats/all' })
+						.then(successFn, errorFn);
+				}
+				getInfo: function(catId) { // get info for a specific cat
+					$http({ method: 'GET', url: 'cats/' + catId })
+						.then(successFn, errorFn);
+				}
+			};
+
+			return svc;
+		})
+		.service('dogService', function($http) {
+			var svc = {
+				getList: function() {
+					$http({ method: 'GET', url: 'dogs/all' })
+						.then(successFn, errorFn);
+				},
+				getInfo: function(dogId) {
+					$http({ method: 'GET', url: 'dogs/' + dogId })
+						.then(successFn, errorFn);
+				}
+			};
+
+			return svc;
+		});
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Try this:</h3>
+						<pre><code data-trim>
+	petStoreApp.service('petService', function($http) {
+			var petSvc = function(_endpoint_) {
+				var endpoint = _endpoint_ + '/';
+
+				return {
+					getList: getList,
+					getInfo: getInfo
+				};
+
+				function getList() {
+					$http({ method: 'GET', url: endpoint + 'all' })
+						.then(successFn, errorFn);
+				}
+
+				function getInfo(petId) {
+					$http({ method: 'GET', url: endpoint + petId })
+						.then(successFn, errorFn);
+					}
+				}
+			};
+
+			return petSvc;
+		});
+						</code></pre>
+
+						<aside class="notes">
+							More testable! Cleaner!
+						</aside>
+					</section>
+
+					<section>
+						<h3>Now our services are DRY</h3>
+						<pre><code data-trim>
+	petStoreApp.service('catService', function(petService) {
+			var catSvc = petService('/cats');
+
+			return catSvc;
+		})
+		.service('dogService', function(petService) {
+			var dogSvc = petService('/dogs');
+
+			return dogSvc;
+		});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>Now we test this code in one place.</li>
+								<li>No more repetition</li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>What about controllers?</h2>
+						<h4>We can also create a base controller and extend it.</h4>
+					</section>
+
+					<section>
+						<h3>Instead of this:</h3>
+						<pre><code data-trim>
+	petStoreApp.controller('catCtrl', function($scope, catService) {
+			$scope.getData = function(catId) {
+				catService.getInfo(catId)
+					.then(successFn, errorFn);
+			};
+
+			$scope.addCat = function(newCat) {
+				catService.add(newCat);
+			};
+		})
+		.controller('dogCtrl', function($scope, dogService) {
+			$scope.getData = function(dogId) {
+				dogService.getInfo(dogId)
+					.then(successFn, errorFn);
+			};
+
+			$scope.addDog = function(newDog) {
+				dogService.add(newDog);
+			};
+		});
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Try this: </h3>
+						<pre><code data-trim>
+	petStoreApp.controller('petCtrl', function($scope, animalService) {
+			$scope.getData = function(petId) {
+				animalService.getInfo(petId)
+					.then(successFn, errorFn);
+			};
+
+			$scope.addPet = function(newPet) {
+				animalService.add(newPet);
+			};
+		});
+						</code></pre>
+						<aside class="notes">
+							"animalService" refers to whatever service we send in when we instantiate the controller; it must be inherited by a child controller.
+						</aside>
+					</section>
+
+					<section>
+						<h3>Much better!</h3>
+						<pre><code data-trim>
+	petStoreApp('petStoreApp')
+		.controller('catCtrl', function($scope, $controller, catService) {
+			$controller('petCtrl', {
+				$scope: $scope,
+				animalService: catService
+			});
+
+			$scope.addCat = $scope.addPet;
+		})
+		.controller('dogCtrl', function($scope, $controller, dogService) {
+			$controller('petCtrl', {
+				$scope: $scope,
+				animalService: dogService
+			});
+
+			$scope.addDog = $scope.addPet;
+		});
+						</code></pre>
+						<aside class="notes">
+							<ul>
+								<li>now when we call getInfo or addPet, it will know to use the service we injected and provided to the $controller function</li>
+								<li>in case our templates already expect 'addCat' and 'addDog', we can set them equal to the parent controller's 'addPet' if we want.
+								</li>
+							</ul>
+						</aside>
+					</section>
+				</section>
+
+				<section>
+					<h2>Takeaways</h2>
+					<h4>
+						<ul>
+							<li class="fragment">Stop using global objects.</li>
+							<li class="fragment">Use the tools Angular provides you.</li>
+							<li class="fragment">Keep business logic out of controllers.</li>
+							<li class="fragment">Extend base services &amp; controllers to minimize code duplication</li>
+							<li class="fragment">
+								<span>DON'T.</span>
+								<span class="fragment">REPEAT.</span>
+								<span class="fragment">YOURSELF.</span>
+							</li>
+						</ul>
+					</h4>
+
+					<aside class="notes">
+						We can take steps to incrementally update our code, piece by piece, while still following Angular best practices.
+					</aside>
+				</section>
+
+				<section>
+					<h2>Thank You!</h2>
+					<h4>
+						Alexandra Atzl<br/>
+						<a href="http://www.alexandraatzl.com">alexandraatzl.com</a><br/>
+						<a href="http://twitter.com/alexandraatzl">@alexandraatzl</a>
+					</h4>
+				</section>
+			</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'convex', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); hljs.configure({ tabReplace: '  ' }); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+
+
+		</script>
+
+	</body>
+</html>
